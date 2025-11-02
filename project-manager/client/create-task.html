@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Create Task</title><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css"></head>
+<body>
+  <header class="top"><div class="wrap"><h1>Project Manager</h1><nav><a href="index.html">Dashboard</a><a href="tasks.html">Tasks</a></nav></div></header>
+  <main class="container">
+    <h2>Create Task</h2>
+    <form id="form">
+      <label>Title<input name="title" required></label>
+      <label>Project<select name="projectId" id="projectSelect"></select></label>
+      <label>Assignee<select name="assigneeId" id="userSelect"></select></label>
+      <label>Due Date<input type="date" name="dueDate"></label>
+      <label>Status<select name="status"><option>Todo</option><option>In Progress</option><option>Done</option></select></label>
+      <button>Create Task</button>
+    </form>
+  </main>
+<script>
+async function loadOptions(){
+  const p = await (await fetch('/api/projects')).json();
+  const u = await (await fetch('/api/users')).json();
+  const ps = document.getElementById('projectSelect'), us = document.getElementById('userSelect');
+  ps.innerHTML = '<option value="">--select--</option>'; u.forEach(x=>{ ps.appendChild(new Option(x.name, x.id)); }); // oops order swapped intentionally: fix below
+  ps.innerHTML = '<option value="">--select--</option>'; p.forEach(x=> ps.appendChild(new Option(x.title, x.id)));
+  us.innerHTML = '<option value="">--none--</option>'; u.forEach(x=> us.appendChild(new Option(x.name, x.id)));
+}
+document.getElementById('form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const payload = { title: fd.get('title'), projectId: fd.get('projectId'), assigneeId: fd.get('assigneeId'), dueDate: fd.get('dueDate'), status: fd.get('status') };
+  const res = await fetch('/api/tasks', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
+  if(res.ok){ alert('Task created'); window.location='tasks.html'; } else { const err=await res.json(); alert('Error: '+(err.error||'failed')); }
+});
+loadOptions();
+</script>
+</body>
+</html>

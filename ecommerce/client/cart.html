@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Cart</title><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css"></head>
+<body>
+  <header class="top"><div class="wrap"><h1>Mini Shop</h1><nav><a href="index.html">Home</a><a href="login.html" id="authLink">Login</a></nav></div></header>
+  <main class="container">
+    <h2>Your Cart</h2>
+    <div id="cartArea"></div>
+    <div id="checkout" style="display:none">
+      <h3>Checkout</h3>
+      <label>Name<input id="name"></label>
+      <label>Address<input id="address"></label>
+      <button id="place">Place Order (simulate payment)</button>
+    </div>
+  </main>
+<script>
+async function loadCart(){
+  const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+  const res = await fetch('/api/products');
+  const products = await res.json();
+  const area = document.getElementById('cartArea');
+  if(cart.length===0){ area.innerHTML = '<p>Cart is empty.</p>'; return; }
+  let html = '<div>';
+  let total = 0;
+  cart.forEach(item=>{
+    const p = products.find(x=>x.id===item.id);
+    if(p){ html += '<div class="card"><h3>'+escape(p.title)+'</h3><p>$'+p.price.toFixed(2)+' x '+item.qty+'</p></div>'; total += p.price*item.qty; }
+  });
+  html += '</div><p><strong>Total: $'+total.toFixed(2)+'</strong></p>';
+  area.innerHTML = html;
+  document.getElementById('checkout').style.display = 'block';
+  document.getElementById('place').onclick = async ()=>{
+    const token = localStorage.getItem('token');
+    if(!token){ alert('Please login to place order'); window.location='login.html'; return; }
+    const name = document.getElementById('name').value.trim();
+    const address = document.getElementById('address').value.trim();
+    if(!name||!address){ alert('Enter name and address'); return; }
+    const res2 = await fetch('/api/orders', { method:'POST', headers:{ 'Content-Type':'application/json','Authorization':'Bearer '+token }, body: JSON.stringify({ items: cart, total, shipping: { name, address } }) });
+    if(res2.ok){ const data = await res2.json(); alert('Order placed: '+data.orderId); localStorage.removeItem('cart'); window.location='index.html'; }
+    else { const err = await res2.json(); alert('Error: '+(err.error||'failed'));}
+  };
+}
+function escape(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+loadCart();
+</script>
+</body>
+</html>

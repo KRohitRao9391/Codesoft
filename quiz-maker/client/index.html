@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Quiz Maker - Home</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <h1>Quiz Maker</h1>
+      <p>Create quizzes and let others take them. Immediate scoring.</p>
+      <div class="actions">
+        <a href="create.html" class="btn">Create Quiz</a>
+        <a href="list.html" class="btn alt">Take a Quiz</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Featured</h2>
+      <p>Browse quizzes or create your own.</p>
+      <div id="featured"></div>
+    </section>
+  </main>
+
+  <footer class="container">
+    <p>Quiz Maker - Minimal Demo</p>
+  </footer>
+
+<script>
+async function loadFeatured(){
+  const res = await fetch('/api/quizzes');
+  const list = await res.json();
+  const container = document.getElementById('featured');
+  if(list.length===0){ container.innerHTML = '<p>No quizzes yet. Create one!</p>'; return; }
+  container.innerHTML = '';
+  list.slice(0,3).forEach(q=>{
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.innerHTML = '<h3>'+escapeHtml(q.title)+'</h3><p>'+escapeHtml(q.description||'')+'</p><p><a href="take.html?id='+q.id+'" class="btn small">Take Quiz</a></p>';
+    container.appendChild(el);
+  });
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+loadFeatured();
+</script>
+</body>
+</html>

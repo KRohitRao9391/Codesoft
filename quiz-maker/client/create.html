@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Create Quiz</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Create a Quiz</h1>
+    <form id="quizForm">
+      <label>Title<input name="title" required></label>
+      <label>Description<input name="description"></label>
+      <div id="questions"></div>
+      <p><button type="button" id="addQ">Add Question</button></p>
+      <p><button type="submit" class="btn">Publish Quiz</button> <a href="index.html" class="btn alt">Home</a></p>
+    </form>
+  </main>
+<script>
+function makeQuestionHtml(idx){
+  return '<div class="question" data-idx="'+idx+'">    <h3>Question '+(idx+1)+'</h3>    <label>Text<input name="q_'+idx+'_text" required></label>    <label>Option A<input name="q_'+idx+'_opt_0" required></label>    <label>Option B<input name="q_'+idx+'_opt_1" required></label>    <label>Option C<input name="q_'+idx+'_opt_2" required></label>    <label>Option D<input name="q_'+idx+'_opt_3" required></label>    <label>Correct option (0-3)<input name="q_'+idx+'_correct" type="number" min="0" max="3" value="0" required></label>    <button type="button" class="removeQ">Remove</button>  </div>';
+}
+
+let qCount = 0;
+const questionsEl = document.getElementById('questions');
+function addQ(){
+  questionsEl.insertAdjacentHTML('beforeend', makeQuestionHtml(qCount));
+  qCount++;
+}
+document.getElementById('addQ').addEventListener('click', addQ);
+questionsEl.addEventListener('click', e=>{
+  if(e.target.classList.contains('removeQ')){
+    e.target.closest('.question').remove();
+    // reindex
+    const qs = Array.from(document.querySelectorAll('.question'));
+    qCount = qs.length;
+    qs.forEach((el,i)=> el.querySelector('h3').textContent = 'Question '+(i+1));
+  }
+});
+document.getElementById('quizForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const form = e.target;
+  const title = form.title.value.trim();
+  const description = form.description.value.trim();
+  const qs = [];
+  const qEls = document.querySelectorAll('.question');
+  if(qEls.length===0){ alert('Add at least one question'); return; }
+  qEls.forEach((el, idx)=>{
+    const text = el.querySelector('[name^="q_"][name$="_text"]').value;
+    const options = [
+      el.querySelector('[name$="_opt_0"]').value,
+      el.querySelector('[name$="_opt_1"]').value,
+      el.querySelector('[name$="_opt_2"]').value,
+      el.querySelector('[name$="_opt_3"]').value
+    ];
+    const correctIndex = Number(el.querySelector('[name$="_correct"]').value);
+    qs.push({ text, options, correctIndex });
+  });
+  const res = await fetch('/api/quizzes', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ title, description, questions: qs }) });
+  if(res.ok){ const data = await res.json(); alert('Quiz created with id: '+data.id); window.location = 'take.html?id='+data.id; }
+  else { const err = await res.json(); alert('Error: '+(err.error||'failed')); }
+});
+</script>
+</body>
+</html>

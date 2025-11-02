@@ -1,0 +1,34 @@
+[
+  {
+    "id": "p1",
+    "title": "Blue Hoodie",
+    "price": 29.99,
+    "category": "Clothing",
+    "image": "https://via.placeholder.com/300x200?text=Hoodie",
+    "description": "Comfortable blue hoodie."
+  },
+  {
+    "id": "p2",
+    "title": "Running Shoes",
+    "price": 59.99,
+    "category": "Footwear",
+    "image": "https://via.placeholder.com/300x200?text=Shoes",
+    "description": "Lightweight running shoes."
+  },
+  {
+    "id": "p3",
+    "title": "Wireless Headphones",
+    "price": 99.99,
+    "category": "Electronics",
+    "image": "https://via.placeholder.com/300x200?text=Headphones",
+    "description": "Noise-cancelling headphones."
+  },
+  {
+    "id": "p4",
+    "title": "Coffee Mug",
+    "price": 9.99,
+    "category": "Home",
+    "image": "https://via.placeholder.com/300x200?text=Mug",
+    "description": "Ceramic coffee mug."
+  }
+]

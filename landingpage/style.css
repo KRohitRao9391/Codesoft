@@ -1,0 +1,136 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Poppins, sans-serif;
+}
+
+body {
+    background: #111;
+    color: #fff;
+}
+
+/* Navbar */
+nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 50px;
+    align-items: center;
+    background: #000;
+    position: fixed;
+    top: 0;
+    z-index: 100;
+}
+
+nav ul li {
+    display: inline-block;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    transition: .3s;
+}
+
+nav ul li a:hover {
+    color: #33A1FD;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Hero Section */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 80px;
+    justify-content: space-between;
+}
+
+.hero-text h1 {
+    font-size: 45px;
+}
+
+.hero-text h1 span {
+    color: #33A1FD;
+}
+
+.hero-text p {
+    margin: 15px 0;
+    width: 85%;
+    font-size: 18px;
+}
+
+.btn {
+    background: #33A1FD;
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.hero-img img {
+    width: 350px;
+    border-radius: 10px;
+}
+
+/* About Section */
+.about {
+    padding: 100px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.about-img img {
+    width: 300px;
+    border-radius: 10px;
+}
+
+.about-text {
+    width: 50%;
+}
+
+.about-text h2 {
+    font-size: 32px;
+    color: #fff;
+}
+
+.about-text p {
+    margin: 15px 0;
+}
+
+/* Skills Section */
+.skills {
+    padding: 80px;
+    background: #1a1a1a;
+    text-align: center;
+}
+
+.skills ul li {
+    display: inline-block;
+    margin: 10px 20px;
+    background: #222;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+/* Contact */
+.contact {
+    padding: 80px;
+    text-align: center;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: #000;
+}

@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Take Quiz</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <div id="quizArea"></div>
+    <p><a href="list.html" class="btn alt">Back to list</a></p>
+  </main>
+<script>
+function qsParam(key){ return new URLSearchParams(location.search).get(key); }
+const quizId = qsParam('id');
+const quizArea = document.getElementById('quizArea');
+
+async function loadQuiz(){
+  if(!quizId){ quizArea.innerHTML = '<p>No quiz selected. <a href="list.html">Choose a quiz</a></p>'; return; }
+  const res = await fetch('/api/quizzes/'+encodeURIComponent(quizId));
+  if(!res.ok){ quizArea.innerHTML = '<p>Quiz not found.</p>'; return; }
+  const quiz = await res.json();
+  renderQuiz(quiz);
+}
+
+function renderQuiz(q){
+  document.title = 'Take: '+q.title;
+  let html = '<h1>'+escapeHtml(q.title)+'</h1>';
+  html += '<p>'+escapeHtml(q.description||'')+'</p>';
+  html += '<form id="takeForm">';
+  q.questions.forEach((ques, idx)=>{
+    html += '<div class="qcard"><h3>Q'+(idx+1)+'. '+escapeHtml(ques.text)+'</h3>';
+    ques.options.forEach((opt,i)=>{
+      html += '<label><input type="radio" name="q_'+idx+'" value="'+i+'"> '+escapeHtml(opt)+'</label>';
+    });
+    html += '</div>';
+  });
+  html += '<p><button class="btn">Submit Answers</button></p></form>';
+  quizArea.innerHTML = html;
+  document.getElementById('takeForm').addEventListener('submit', submitAnswers);
+}
+
+async function submitAnswers(e){
+  e.preventDefault();
+  const form = e.target;
+  const answers = [];
+  const qs = document.querySelectorAll('.qcard');
+  for(let i=0;i<qs.length;i++){
+    const sel = form['q_'+i];
+    let val = null;
+    if(sel){
+      if(sel.length){ // radio NodeList
+        for(let r of sel){
+          if(r.checked) val = Number(r.value);
+        }
+      } else { if(sel.checked) val = Number(sel.value); }
+    }
+    answers.push(val);
+  }
+  const res = await fetch('/api/quizzes/'+encodeURIComponent(quizId)+'/submit', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ answers }) });
+  if(!res.ok){ alert('Error submitting'); return; }
+  const result = await res.json();
+  showResults(result);
+}
+
+function showResults(r){
+  let html = '<h2>Results</h2>';
+  html += '<p>Score: '+r.score+' / '+r.total+'</p>';
+  r.details.forEach(d=>{
+    html += '<div class="result '+(d.isCorrect? 'ok':'bad')+'"><h4>'+escapeHtml(d.question)+'</h4>';
+    html += '<p>Your answer: '+(d.selected===null? '<em>Not answered</em>': escapeHtml(d.options[d.selected]||'') )+'</p>';
+    html += '<p>Correct answer: '+escapeHtml(d.options[d.correctIndex])+'</p></div>';
+  });
+  quizArea.innerHTML = html + '<p><a href="list.html" class="btn">Take another</a></p>';
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+loadQuiz();
+</script>
+</body>
+</html>

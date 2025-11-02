@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Basic Calculator</title>
+<style>
+  :root{
+    --bg:#0f1724;
+    --panel:#0b2a5f;
+    --button:#1e90ff;
+    --button-dark:#1667b3;
+    --accent:#38b6ff;
+    --muted:#cbd5e1;
+    --display-bg:#e8f6ff;
+    --display-text:#00243a;
+    --glass: rgba(255,255,255,0.04);
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,var(--bg) 0%, #081224 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    color:var(--muted);
+  }
+
+  .calculator {
+    width: 360px;
+    max-width: 95%;
+    background: linear-gradient(180deg,var(--panel), rgba(6,18,38,0.9));
+    border-radius:18px;
+    padding:18px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.7),
+                inset 0 1px 0 rgba(255,255,255,0.02);
+  }
+
+  .brand {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .logo {
+    width:44px; height:44px;
+    border-radius:8px;
+    background:linear-gradient(135deg,var(--button),var(--accent));
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-weight:700; font-size:18px;
+    box-shadow: 0 4px 12px rgba(24,144,255,0.25);
+  }
+  .brand h1 { font-size:18px; margin:0; color:#e6f7ff; }
+  .brand p { margin:0; font-size:12px; color:var(--muted); }
+
+  /* Display */
+  .display {
+    background: var(--display-bg);
+    color: var(--display-text);
+    border-radius:12px;
+    padding:14px;
+    min-height:64px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-end;
+    margin-bottom:14px;
+    box-shadow: 0 6px 18px rgba(3,10,20,0.35);
+  }
+  .display .history {
+    font-size:13px;
+    color: rgba(0,36,58,0.5);
+    align-self:flex-end;
+  }
+  .display .current {
+    font-size:24px;
+    font-weight:700;
+    margin-top:6px;
+    word-break:break-all;
+  }
+
+  /* Buttons grid */
+  .keys {
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:10px;
+  }
+
+  button.key {
+    border: none;
+    border-radius:10px;
+    padding:16px;
+    font-size:18px;
+    cursor:pointer;
+    transition: transform .06s ease, box-shadow .08s ease;
+    box-shadow: 0 4px 8px rgba(3,12,28,0.35);
+    background: var(--glass);
+    color: var(--muted);
+  }
+
+  button.key:active { transform: translateY(2px); }
+
+  /* special keys */
+  .key.operator {
+    background: linear-gradient(180deg,var(--button),var(--button-dark));
+    color: white;
+    font-weight:700;
+  }
+
+  .key.equal {
+    background: linear-gradient(180deg,#21b0ff,#0e86d6);
+    color:#fff;
+    grid-column: span 1;
+    font-weight:700;
+  }
+
+  .key.wide {
+    grid-column: span 2;
+  }
+
+  .key.clear {
+    background: linear-gradient(180deg,#ff5b5b,#d63b3b);
+    color:white;
+    font-weight:700;
+  }
+
+  .key.back {
+    background: linear-gradient(180deg,#ffa94d,#ff7a00);
+    color:white;
+    font-weight:700;
+  }
+
+  /* Responsive tweak */
+  @media (max-width:420px){
+    .calculator{padding:14px}
+    .display .current{font-size:20px}
+    button.key{padding:14px; font-size:16px}
+  }
+</style>
+</head>
+<body>
+
+<div class="calculator" role="application" aria-label="Calculator">
+  <div class="brand">
+    <div class="logo">C</div>
+    <div>
+      <h1>Calculator</h1>
+      <p>Simple HTML · CSS · JS</p>
+    </div>
+  </div>
+
+  <div class="display" id="display" aria-live="polite">
+    <div class="history" id="history">&nbsp;</div>
+    <div class="current" id="current">0</div>
+  </div>
+
+  <div class="keys" id="keys" role="group" aria-label="Calculator keys">
+    <!-- Row 1 -->
+    <button class="key clear" data-action="clear">C</button>
+    <button class="key back" data-action="back">⌫</button>
+    <button class="key operator" data-value="(">(</button>
+    <button class="key operator" data-value=")">)</button>
+
+    <!-- Row 2 -->
+    <button class="key" data-value="7">7</button>
+    <button class="key" data-value="8">8</button>
+    <button class="key" data-value="9">9</button>
+    <button class="key operator" data-value="÷">÷</button>
+
+    <!-- Row 3 -->
+    <button class="key" data-value="4">4</button>
+    <button class="key" data-value="5">5</button>
+    <button class="key" data-value="6">6</button>
+    <button class="key operator" data-value="×">×</button>
+
+    <!-- Row 4 -->
+    <button class="key" data-value="1">1</button>
+    <button class="key" data-value="2">2</button>
+    <button class="key" data-value="3">3</button>
+    <button class="key operator" data-value="-">−</button>
+
+    <!-- Row 5 -->
+    <button class="key wide" data-value="0">0</button>
+    <button class="key" data-value=".">.</button>
+    <button class="key operator" data-value="+">+</button>
+
+    <!-- Row 6 (equals full width) -->
+    <button class="key equal wide" data-action="equals">=</button>
+  </div>
+</div>
+
+<script>
+/*
+  Simple calculator logic:
+  - Maintain current expression string shown in display.
+  - Prevent consecutive operators, and multiple decimals in same number.
+  - On equals: sanitize and evaluate.
+  - Keyboard support.
+*/
+
+(function(){
+  const currentEl = document.getElementById('current');
+  const historyEl = document.getElementById('history');
+  const keys = document.getElementById('keys');
+
+  let expr = "";         // full expression shown
+  let lastPressed = "";  // last character pressed
+
+  // helper: update display
+  function updateDisplay(){
+    currentEl.textContent = expr === "" ? "0" : expr;
+    historyEl.textContent = expr === "" ? " " : "";
+  }
+
+  // helper: check if a character is operator
+  function isOperator(ch){
+    return ["+","-","×","÷","*", "/"].includes(ch);
+  }
+
+  // add char to expression with some guards
+  function addChar(ch){
+    // if ch is a digit
+    if(/\d/.test(ch)){
+      expr += ch;
+      lastPressed = ch;
+      updateDisplay();
+      return;
+    }
+
+    // decimal point: prevent multiple decimals in current number segment
+    if(ch === "."){
+      // find last operator index
+      const lastOp = Math.max(
+        expr.lastIndexOf("+"),
+        expr.lastIndexOf("-"),
+        expr.lastIndexOf("×"),
+        expr.lastIndexOf("÷"),
+        expr.lastIndexOf("*"),
+        expr.lastIndexOf("/")
+      );
+      const currentNumber = expr.slice(lastOp + 1);
+      if(currentNumber.includes(".")){
+        return; // ignore second decimal
+      }
+      // If empty segment (starting with .), prepend 0
+      if(currentNumber === "") expr += "0";
+      expr += ".";
+      lastPressed = ".";
+      updateDisplay();
+      return;
+    }
+
+    // parentheses - always allow ( or ) with basic checks
+    if(ch === "("){
+      // if last char is digit or ')', insert multiplication implicitly
+      if(expr !== "" && (/\d$/.test(expr) || expr.slice(-1) === ")")){
+        expr += "×";
+      }
+      expr += "(";
+      lastPressed = "(";
+      updateDisplay();
+      return;
+    }
+    if(ch === ")"){
+      // allow closing if there's at least one unmatched "("
+      const opens = (expr.match(/\(/g) || []).length;
+      const closes = (expr.match(/\)/g) || []).length;
+      if(opens > closes && expr !== "" && !isOperator(expr.slice(-1))){
+        expr += ")";
+        lastPressed = ")";
+        updateDisplay();
+      }
+      return;
+    }
+
+    // operators (+ - × ÷)
+    if(isOperator(ch)){
+      if(expr === ""){
+        // allow leading minus for negative numbers
+        if(ch === "-" ){
+          expr = "-";
+          lastPressed = ch;
+        }
+        return;
+      }
+      // If last char is operator, replace it (so no consecutive ops)
+      if(isOperator(expr.slice(-1))){
+        expr = expr.slice(0, -1) + ch;
+      } else {
+        expr += ch;
+      }
+      lastPressed = ch;
+      updateDisplay();
+      return;
+    }
+  }
+
+  // clear all
+  function clearAll(){
+    expr = "";
+    lastPressed = "";
+    updateDisplay();
+  }
+
+  // backspace
+  function backspace(){
+    if(expr.length > 0){
+      expr = expr.slice(0, -1);
+      updateDisplay();
+    }
+  }
+
+  // evaluate: sanitize and compute
+  function evaluateExpression(){
+    if(expr === "") return;
+    // Replace visual operators with JS operators
+    let jsExpr = expr.replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-").replace(/--/g,"+0-0-"); // small fix
+    // Validate allowed chars: digits, operators, parentheses, decimal, spaces
+    if(!/^[0-9+\-*/().\s]+$/.test(jsExpr)){
+      currentEl.textContent = "Error";
+      return;
+    }
+    try{
+      // Use Function constructor to evaluate
+      // (slightly safer than eval for our context and after validation)
+      const result = Function('"use strict"; return (' + jsExpr + ')')();
+      expr = String(result);
+      updateDisplay();
+    } catch (e) {
+      currentEl.textContent = "Error";
+    }
+  }
+
+  // handle button clicks
+  keys.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const action = btn.dataset.action;
+    const val = btn.dataset.value;
+
+    if(action === "clear") { clearAll(); return; }
+    if(action === "back") { backspace(); return; }
+    if(action === "equals") { evaluateExpression(); return; }
+    if(val !== undefined) addChar(val);
+  });
+
+  // keyboard support
+  window.addEventListener('keydown', (e) => {
+    // allow numbers
+    if(e.key >= '0' && e.key <= '9'){ addChar(e.key); e.preventDefault(); return; }
+    // operators
+    if(['+','-','*','/','(',')','.'].includes(e.key)){
+      // map * / to × ÷ for consistency (we store × ÷ visually)
+      if(e.key === '*') addChar('×');
+      else if(e.key === '/') addChar('÷');
+      else addChar(e.key);
+      e.preventDefault();
+      return;
+    }
+    if(e.key === 'Enter' || e.key === '='){ evaluateExpression(); e.preventDefault(); return; }
+    if(e.key === 'Backspace'){ backspace(); e.preventDefault(); return; }
+    if(e.key === 'Escape'){ clearAll(); e.preventDefault(); return; }
+  });
+
+  // init display
+  updateDisplay();
+})();
+</script>
+
+</body>
+</html>

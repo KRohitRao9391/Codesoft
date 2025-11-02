@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Job Board - Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="inner">
+      <h1>Find your Dream Job</h1>
+      <p class="lead">Demo Job Board — minimal runnable example</p>
+      <div class="search">
+        <input id="q" placeholder="Search jobs...">
+        <button id="searchBtn">Search</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="jobs" id="jobs"></section>
+    <section class="post">
+      <h2>Post a Job (demo)</h2>
+      <form id="postJob">
+        <input name="title" placeholder="Job title" required>
+        <input name="company" placeholder="Company">
+        <input name="location" placeholder="Location">
+        <textarea name="description" placeholder="Description"></textarea>
+        <button type="submit">Post Job</button>
+      </form>
+    </section>
+
+    <section class="apply" id="applySection" style="display:none">
+      <h2>Apply to Job</h2>
+      <form id="applyForm" enctype="multipart/form-data">
+        <input name="name" placeholder="Your name" required>
+        <input name="email" placeholder="Your email" required>
+        <input name="resume" type="file" accept=".pdf,.doc,.docx">
+        <textarea name="coverLetter" placeholder="Cover letter"></textarea>
+        <button type="submit">Apply</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>Minimal demo · Run the server and open this page (served by Express).</p>
+  </footer>
+
+<script src="app.js"></script>
+</body>
+</html>

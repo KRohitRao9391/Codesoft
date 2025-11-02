@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Tasks</title><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css"></head>
+<body>
+  <header class="top"><div class="wrap"><h1>Project Manager</h1><nav><a href="index.html">Dashboard</a><a href="create-task.html">Create Task</a></nav></div></header>
+  <main class="container">
+    <h2>All Tasks</h2>
+    <div id="list"></div>
+  </main>
+<script>
+async function load(){
+  const res = await fetch('/api/tasks');
+  const tasks = await res.json();
+  const users = await (await fetch('/api/users')).json();
+  const projects = await (await fetch('/api/projects')).json();
+  const el = document.getElementById('list');
+  if(tasks.length===0) el.innerHTML='<p>No tasks yet.</p>';
+  else{
+    el.innerHTML = '';
+    tasks.forEach(t=>{
+      const d = document.createElement('div'); d.className='card';
+      const ass = users.find(u=>u.id===t.assigneeId);
+      const proj = projects.find(p=>p.id===t.projectId);
+      d.innerHTML = '<h3>'+escape(t.title)+'</h3><p>Project: '+(proj?escape(proj.title):'—')+'</p><p>Assignee: '+(ass?escape(ass.name):'Unassigned')+'</p><p>Due: '+(t.dueDate||'—')+'</p><p>Status: '+t.status+'</p>';
+      el.appendChild(d);
+    });
+  }
+}
+function escape(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+load();
+</script>
+</body>
+</html>

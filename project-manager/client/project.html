@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Project</title><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="style.css"></head>
+<body>
+  <header class="top"><div class="wrap"><h1>Project Manager</h1><nav><a href="projects.html">Back</a></nav></div></header>
+  <main class="container">
+    <div id="project"></div>
+    <h3>Tasks</h3>
+    <div id="tasks"></div>
+  </main>
+<script>
+function qsParam(k){ return new URLSearchParams(location.search).get(k); }
+const id = qsParam('id');
+async function load(){
+  if(!id){ document.getElementById('project').innerHTML='<p>No project selected</p>'; return; }
+  const res = await fetch('/api/projects/'+encodeURIComponent(id)); if(!res.ok){ document.getElementById('project').innerHTML='<p>Not found</p>'; return; }
+  const p = await res.json();
+  document.getElementById('project').innerHTML = '<div class="card"><h2>'+escape(p.title)+'</h2><p>'+escape(p.description||'')+'</p><p>Due: '+(p.dueDate||'—')+'</p></div>';
+  const tasksRes = await fetch('/api/tasks'); const tasks = await tasksRes.json();
+  const filtered = tasks.filter(t=>t.projectId===id);
+  const tEl = document.getElementById('tasks'); tEl.innerHTML = '';
+  if(filtered.length===0) tEl.innerHTML='<p>No tasks</p>';
+  filtered.forEach(t=>{
+    const div = document.createElement('div'); div.className='card';
+    div.innerHTML = '<h4>'+escape(t.title)+'</h4><p>Assignee: '+(t.assigneeId||'Unassigned')+'</p><p>Due: '+(t.dueDate||'—')+'</p><p>Status: '+t.status+'</p>';
+    tEl.appendChild(div);
+  });
+}
+function escape(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+load();
+</script>
+</body>
+</html>
